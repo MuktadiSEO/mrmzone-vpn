@@ -6,6 +6,11 @@ on:
     tags: ['v*']
   pull_request:
   workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'Create a GitHub Release with this tag (e.g. v1.0.0). Leave empty to only build.'
+        required: false
+        default: ''
 
 permissions:
   contents: write
@@ -73,7 +78,7 @@ jobs:
 
   release:
     name: Publish release
-    if: startsWith(github.ref, 'refs/tags/v')
+    if: startsWith(github.ref, 'refs/tags/v') || (github.event_name == 'workflow_dispatch' && inputs.release_tag != '')
     needs: [android, desktop]
     runs-on: ubuntu-latest
     steps:
@@ -81,6 +86,23 @@ jobs:
         with:
           path: out
           merge-multiple: true
+      - name: List files
+        run: ls -la out
       - uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ inputs.release_tag || github.ref_name }}
+          target_commitish: ${{ github.sha }}
+          name: MRMZone VPN ${{ inputs.release_tag || github.ref_name }}
+          make_latest: true
+          body: |
+            Free multi-country VPN — ফ্রি মাল্টি-কান্ট্রি ভিপিএন।
+
+            | ডিভাইস | ফাইল |
+            |---|---|
+            | Android | `MRMZone-VPN-android.apk` |
+            | Windows | `MRMZone-VPN-1.0.0-Windows-Setup.exe` (installer) / `MRMZone-VPN-1.0.0-Windows-Portable.exe` |
+            | macOS | `MRMZone-VPN-1.0.0-macOS-arm64.dmg` (Apple Silicon) / `MRMZone-VPN-1.0.0-macOS-x64.dmg` (Intel) |
+            | Linux | `.deb` / `.AppImage` |
+
+            কম্পিউটারে আগে ফ্রি OpenVPN ইনস্টল করুন: https://openvpn.net/community-downloads/ (Windows), `brew install openvpn` (Mac)।
           files: out/*

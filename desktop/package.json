@@ -45,11 +45,18 @@
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
-      "shortcutName": "MRMZone VPN"
+      "shortcutName": "MRMZone VPN",
+      "artifactName": "MRMZone-VPN-${version}-Windows-Setup.${ext}"
     },
     "mac": {
       "target": [
-        "dmg"
+        {
+          "target": "dmg",
+          "arch": [
+            "arm64",
+            "x64"
+          ]
+        }
       ],
       "icon": "build/icon.png",
       "category": "public.app-category.utilities"
@@ -69,9 +76,19 @@
       "depends": [
         "openvpn",
         "policykit-1 | pkexec"
-      ]
+      ],
+      "artifactName": "MRMZone-VPN-${version}-Linux-${arch}.${ext}"
     },
-    "publish": null
+    "publish": null,
+    "portable": {
+      "artifactName": "MRMZone-VPN-${version}-Windows-Portable.${ext}"
+    },
+    "dmg": {
+      "artifactName": "MRMZone-VPN-${version}-macOS-${arch}.${ext}"
+    },
+    "appImage": {
+      "artifactName": "MRMZone-VPN-${version}-Linux-${arch}.${ext}"
+    }
   },
   "desktopName": "mrmzone-vpn.desktop"
 }

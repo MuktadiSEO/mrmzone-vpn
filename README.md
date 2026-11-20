@@ -38,7 +38,7 @@ Free VPN for Android and desktop. Connect to servers in many countries with one 
 
 1. GitHub রিপোজিটরিতে **Actions** ট্যাবে যান → সর্বশেষ "Build apps" রান খুলুন
 2. নিচে **Artifacts** থেকে ডাউনলোড করুন: `MRMZone-VPN-android`, `MRMZone-VPN-Windows`, `MRMZone-VPN-macOS`, `MRMZone-VPN-Linux`
-3. `v1.0.0` এর মতো একটি ট্যাগ push করলে সব ফাইলসহ একটি **Release** তৈরি হয়
+3. **Releases** পেজ থেকে সরাসরি ডাউনলোড করুন। নতুন Release বানাতে: Actions → Build apps → Run workflow → `release_tag` এ `v1.0.1` এর মতো ট্যাগ দিন
 
 ### মোবাইল (Android) ইনস্টল
 
@@ -50,7 +50,7 @@ Free VPN for Android and desktop. Connect to servers in many countries with one 
 অ্যাপটি ফ্রি, ওপেন-সোর্স **OpenVPN** ইঞ্জিন ব্যবহার করে — একবার ইনস্টল করতে হয়:
 
 - **Windows:** [openvpn.net/community-downloads](https://openvpn.net/community-downloads/) থেকে Windows installer
-  ইনস্টল করুন (ডিফল্ট অপশন)। তারপর `MRMZone-VPN-...-win-x64.exe` ইনস্টল করুন। অ্যাপ Administrator হিসেবে চলবে
+  ইনস্টল করুন (ডিফল্ট অপশন)। তারপর `MRMZone-VPN-1.0.0-Windows-Setup.exe` ইনস্টল করুন (বা ইনস্টল ছাড়া চালাতে `...-Windows-Portable.exe`)। অ্যাপ Administrator হিসেবে চলবে
   (ভিপিএন চালাতে Windows এটা চায়)।
 - **macOS:** Terminal-এ `brew install openvpn`, তারপর `.dmg` থেকে অ্যাপ ইনস্টল। কানেক্টের সময় Mac পাসওয়ার্ড চাইবে।
   (অ্যাপটি sign করা নেই, তাই প্রথমবার right-click → Open করুন।)
