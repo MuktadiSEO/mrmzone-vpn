@@ -56,6 +56,23 @@ function freePort() {
   });
 }
 
+/** Turns raw OpenVPN messages into something a person can act on. */
+function friendlyError(msg) {
+  if (!msg) return msg;
+  const rules = [
+    [/connect-retry-max|Connection reset|TLS key negotiation failed|TLS Error|Bad encapsulated packet/i,
+      'The server did not answer. It may be busy or blocked on your network — try another server.'],
+    [/Cannot resolve|RESOLVE/i, 'Could not find the server. Check your internet connection.'],
+    [/Connection refused/i, 'The server refused the connection. Try another server.'],
+    [/AUTH_FAILED/i, 'The server refused the login (it may be full). Try another server.'],
+    [/No usable data channel cipher/i, 'This server uses an unsupported encryption. Try another server.'],
+    [/TAP-Windows|Cannot open TUN|wintun|ovpn-dco/i,
+      'The OpenVPN network adapter is missing. Reinstall OpenVPN with its default options, then restart the app.'],
+  ];
+  for (const [re, text] of rules) if (re.test(msg)) return text;
+  return msg;
+}
+
 function shellQuote(s) {
   return `'${String(s).replace(/'/g, "'\\''")}'`;
 }
@@ -295,8 +312,8 @@ class OpenVpnSession extends EventEmitter {
     for (const f of this.files) {
       try { fs.rmSync(f, { force: true }); } catch { /* ignore */ }
     }
-    this.emit('exit', { error: this.stopping && !this.lastError ? null : error || null });
+    this.emit('exit', { error: this.stopping && !this.lastError ? null : friendlyError(error) || null });
   }
 }
 
-module.exports = { OpenVpnSession, findOpenVpn };
+module.exports = { OpenVpnSession, findOpenVpn, friendlyError };

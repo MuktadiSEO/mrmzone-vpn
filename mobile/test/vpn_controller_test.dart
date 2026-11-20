@@ -145,6 +145,12 @@ void main() {
     expect(c.server!.countryCode, 'JP');
   });
 
+  test('friendly errors', () {
+    expect(friendlyError('TLS Error: TLS key negotiation failed'), contains('did not answer'));
+    expect(friendlyError(null), 'Connection failed. Try another country.');
+    expect(friendlyError('weird'), 'Connection failed: weird');
+  });
+
   test('favorites persist', () async {
     c.toggleFavorite('KR');
     final prefs = await SharedPreferences.getInstance();

@@ -23,6 +23,23 @@ class PublicIp {
 
 List<VpnServer> _parseInBackground(String csv) => parseServerList(csv);
 
+/// Turns raw OpenVPN messages into something a person can act on.
+String friendlyError(String? raw) {
+  final msg = raw?.trim() ?? '';
+  final rules = <RegExp, String>{
+    RegExp(r'connect-retry|Connection reset|TLS key negotiation|TLS Error|Bad encapsulated|timed? ?out', caseSensitive: false):
+        'The server did not answer. It may be busy or blocked on your network. Try another server.',
+    RegExp(r'resolve', caseSensitive: false): 'Could not find the server. Check your internet connection.',
+    RegExp(r'refused', caseSensitive: false): 'The server refused the connection. Try another server.',
+    RegExp(r'AUTH_FAILED', caseSensitive: false): 'The server refused the login (it may be full). Try another server.',
+    RegExp(r'cipher', caseSensitive: false): 'This server uses an unsupported encryption. Try another server.',
+  };
+  for (final e in rules.entries) {
+    if (e.key.hasMatch(msg)) return e.value;
+  }
+  return msg.isEmpty ? 'Connection failed. Try another country.' : 'Connection failed: $msg';
+}
+
 /// App state: the free server list and the VPN connection.
 class VpnController extends ChangeNotifier {
   VpnController({OpenVPN? engine, http.Client? client})
@@ -318,7 +335,7 @@ class VpnController extends ChangeNotifier {
       }
       if (stage == VPNStage.unknown) return 'The server did not respond in time. Try another country.';
       if (stage == VPNStage.auth_failed) return 'The server refused the connection (it may be full).';
-      return reason?.isNotEmpty == true ? 'Connection failed: $reason' : 'Connection failed. Try another country.';
+      return friendlyError(reason);
     } on PlatformException catch (e) {
       return 'Connection failed: ${e.message ?? e.code}';
     } catch (e) {

@@ -5,7 +5,7 @@ const assert = require('node:assert/strict');
 const os = require('node:os');
 const path = require('node:path');
 const fs = require('node:fs');
-const { OpenVpnSession } = require('../src/openvpn');
+const { OpenVpnSession, friendlyError } = require('../src/openvpn');
 
 const FAKE = path.join(__dirname, 'fake-openvpn.js');
 const skip = process.platform === 'win32' || (typeof process.getuid === 'function' && process.getuid() !== 0)
@@ -42,7 +42,7 @@ test('reports a readable error when the server fails', { skip, timeout: 15000 },
   const exited = new Promise((resolve) => s.once('exit', resolve));
   await s.start('client\nremote fail 1194\n');
   const { error } = await exited;
-  assert.match(error, /TLS Error/);
+  assert.match(error, /did not answer/);
   assert.equal(s.connected, false);
 });
 
@@ -54,4 +54,11 @@ test('can be cancelled while still connecting', { skip, timeout: 15000 }, async 
   await s.stop();
   const { error } = await exited;
   assert.equal(error, null);
+});
+
+test('friendly error messages', () => {
+  assert.match(friendlyError('All connections have been connect-retry-max (2) times unsuccessful, exiting'), /did not answer/);
+  assert.match(friendlyError('There are no TAP-Windows adapters on this system'), /network adapter/);
+  assert.equal(friendlyError('Administrator permission was cancelled.'), 'Administrator permission was cancelled.');
+  assert.equal(friendlyError(null), null);
 });
