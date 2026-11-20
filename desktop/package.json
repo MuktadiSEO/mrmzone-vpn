@@ -3,6 +3,7 @@
   "productName": "MRMZone VPN",
   "version": "1.0.0",
   "description": "Free VPN for Windows, macOS and Linux with servers in many countries (VPN Gate).",
+  "homepage": "https://github.com/MuktadiSEO/mrmzone-vpn",
   "main": "src/main.js",
   "author": "MRMZone",
   "license": "MIT",
@@ -23,10 +24,20 @@
     "appId": "com.mrmzone.vpn",
     "productName": "MRMZone VPN",
     "artifactName": "MRMZone-VPN-${version}-${os}-${arch}.${ext}",
-    "directories": { "output": "dist", "buildResources": "build" },
-    "files": ["src/**/*", "build/icon.png", "package.json"],
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "src/**/*",
+      "build/icon.png",
+      "package.json"
+    ],
     "win": {
-      "target": ["nsis", "portable"],
+      "target": [
+        "nsis",
+        "portable"
+      ],
       "icon": "build/icon.png",
       "requestedExecutionLevel": "requireAdministrator"
     },
@@ -36,14 +47,31 @@
       "createDesktopShortcut": true,
       "shortcutName": "MRMZone VPN"
     },
-    "mac": { "target": ["dmg"], "icon": "build/icon.png", "category": "public.app-category.utilities" },
+    "mac": {
+      "target": [
+        "dmg"
+      ],
+      "icon": "build/icon.png",
+      "category": "public.app-category.utilities"
+    },
     "linux": {
-      "target": ["AppImage", "deb"],
+      "target": [
+        "AppImage",
+        "deb"
+      ],
       "icon": "build/icon.png",
       "category": "Network",
       "maintainer": "MRMZone",
-      "synopsis": "Free multi-country VPN"
+      "synopsis": "Free multi-country VPN",
+      "syncDesktopName": true
     },
-    "deb": { "depends": ["openvpn", "policykit-1 | pkexec"] }
-  }
+    "deb": {
+      "depends": [
+        "openvpn",
+        "policykit-1 | pkexec"
+      ]
+    },
+    "publish": null
+  },
+  "desktopName": "mrmzone-vpn.desktop"
 }
