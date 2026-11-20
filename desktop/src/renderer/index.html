@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; img-src 'self' data: https://flagcdn.com; style-src 'self'; script-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MRMZone VPN</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="nav" id="top">
+    <div class="nav-logo" aria-label="MRMZone VPN">
+      <svg class="logo-shield" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 4 5v6c0 5 3.4 9.4 8 11 4.6-1.6 8-6 8-11V5l-8-3z"/><path class="tick" d="m8.5 12 2.5 2.5 4.5-5"/></svg>
+      <div class="logo-text"><span>mrmzone</span><b>vpn</b></div>
+    </div>
+    <div class="nav-location" title="Your current public IP address">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>
+      <div>
+        <small>Your IP address</small>
+        <strong id="nav-ip">Checking…</strong>
+      </div>
+    </div>
+    <form class="nav-search" id="search-form" role="search">
+      <select id="sort" aria-label="Sort countries">
+        <option value="name">A–Z</option>
+        <option value="speed">Fastest</option>
+        <option value="ping">Lowest ping</option>
+        <option value="servers">Most servers</option>
+      </select>
+      <input id="search" type="search" placeholder="Search countries, e.g. Japan" autocomplete="off" aria-label="Search countries">
+      <button type="submit" aria-label="Search">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 2a8 8 0 0 1 6.3 12.9l5.4 5.4-1.4 1.4-5.4-5.4A8 8 0 1 1 10 2zm0 2a6 6 0 1 0 0 12 6 6 0 0 0 0-12z"/></svg>
+      </button>
+    </form>
+    <div class="nav-status">
+      <small>VPN status</small>
+      <strong id="nav-status">Not protected</strong>
+    </div>
+  </header>
+
+  <nav class="subnav">
+    <button class="tab active" data-tab="all">☰ All countries</button>
+    <button class="tab" data-tab="fastest">Fastest</button>
+    <button class="tab" data-tab="favorites">★ Favorites</button>
+    <button class="tab" id="refresh">↻ Refresh servers</button>
+    <span class="subnav-note" id="updated"></span>
+  </nav>
+
+  <div id="openvpn-banner" class="alert" hidden>
+    <div class="alert-icon">!</div>
+    <div>
+      <h3>One-time setup: install OpenVPN</h3>
+      <p id="openvpn-help"></p>
+    </div>
+    <button class="btn btn-yellow" id="openvpn-download">Get OpenVPN (free)</button>
+  </div>
+
+  <main class="page">
+    <aside class="card connection" aria-live="polite">
+      <h2>Connection</h2>
+      <button class="power" id="power" data-phase="disconnected" aria-label="Connect">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 2h2v10h-2zM6.3 5.3l1.4 1.4A7 7 0 1 0 16.3 6.7l1.4-1.4A9 9 0 1 1 6.3 5.3z"/></svg>
+      </button>
+      <div class="phase" id="phase">Not connected</div>
+      <div class="detail" id="detail">Pick a country or press the button for the fastest free server.</div>
+
+      <div class="selected" id="selected" hidden>
+        <span id="sel-flag"></span>
+        <div>
+          <div class="sel-name" id="sel-name"></div>
+          <div class="sel-host" id="sel-host"></div>
+        </div>
+      </div>
+
+      <dl class="stats">
+        <div><dt>Time</dt><dd id="timer">00:00:00</dd></div>
+        <div><dt>Download</dt><dd id="down">0 B</dd></div>
+        <div><dt>Upload</dt><dd id="up">0 B</dd></div>
+        <div><dt>Public IP</dt><dd id="ip">—</dd></div>
+      </dl>
+
+      <button class="btn btn-yellow wide" id="connect-btn">Quick connect</button>
+      <button class="btn btn-orange wide" id="disconnect-btn" hidden>Disconnect</button>
+      <p class="fineprint">Free servers are provided by volunteers through the
+        <a href="#" id="vpngate-link">VPN Gate</a> academic project. Speeds vary.</p>
+    </aside>
+
+    <section class="results">
+      <div class="results-head">
+        <h1 id="results-title">Free VPN servers by country</h1>
+        <span id="results-count"></span>
+      </div>
+      <div id="grid" class="grid" aria-busy="true"></div>
+      <div id="empty" class="empty" hidden></div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <a href="#top" class="back-top">Back to top</a>
+    <div class="footer-bottom">MRMZone VPN · Free · No account needed</div>
+  </footer>
+
+  <div class="modal" id="modal" hidden>
+    <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <div class="modal-head">
+        <h2 id="modal-title"></h2>
+        <button class="modal-close" id="modal-close" aria-label="Close">×</button>
+      </div>
+      <div class="modal-body" id="modal-body"></div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="alert" hidden></div>
+
+  <script src="app.js"></script>
+</body>
+</html>

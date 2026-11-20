@@ -1,0 +1,49 @@
+{
+  "name": "mrmzone-vpn",
+  "productName": "MRMZone VPN",
+  "version": "1.0.0",
+  "description": "Free VPN for Windows, macOS and Linux with servers in many countries (VPN Gate).",
+  "main": "src/main.js",
+  "author": "MRMZone",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "test": "node --test test/*.test.js",
+    "dist": "electron-builder",
+    "dist:win": "electron-builder --win nsis portable",
+    "dist:mac": "electron-builder --mac dmg",
+    "dist:linux": "electron-builder --linux AppImage deb"
+  },
+  "devDependencies": {
+    "electron": "44.10.1",
+    "electron-builder": "26.18.0"
+  },
+  "build": {
+    "appId": "com.mrmzone.vpn",
+    "productName": "MRMZone VPN",
+    "artifactName": "MRMZone-VPN-${version}-${os}-${arch}.${ext}",
+    "directories": { "output": "dist", "buildResources": "build" },
+    "files": ["src/**/*", "build/icon.png", "package.json"],
+    "win": {
+      "target": ["nsis", "portable"],
+      "icon": "build/icon.png",
+      "requestedExecutionLevel": "requireAdministrator"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "shortcutName": "MRMZone VPN"
+    },
+    "mac": { "target": ["dmg"], "icon": "build/icon.png", "category": "public.app-category.utilities" },
+    "linux": {
+      "target": ["AppImage", "deb"],
+      "icon": "build/icon.png",
+      "category": "Network",
+      "maintainer": "MRMZone",
+      "synopsis": "Free multi-country VPN"
+    },
+    "deb": { "depends": ["openvpn", "policykit-1 | pkexec"] }
+  }
+}
