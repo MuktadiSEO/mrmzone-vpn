@@ -8,9 +8,13 @@
  * This module only contains pure functions so it can be unit-tested.
  */
 
+// Official API first, then a copy refreshed every 30 minutes on GitHub
+// (.github/workflows/server-list.yml) for networks that block vpngate.net.
 const API_URLS = [
   'https://www.vpngate.net/api/iphone/',
+  'https://raw.githubusercontent.com/MuktadiSEO/mrmzone-vpn/server-list/servers.csv',
   'http://www.vpngate.net/api/iphone/',
+  'https://cdn.jsdelivr.net/gh/MuktadiSEO/mrmzone-vpn@server-list/servers.csv',
 ];
 
 const COUNTRY_CODE = /^[A-Z]{2}$/;

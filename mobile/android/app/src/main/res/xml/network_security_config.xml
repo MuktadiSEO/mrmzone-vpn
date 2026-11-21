@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android 9+ blocks plain HTTP. Allow it only for the VPN Gate API backup
+     address; everything else stays HTTPS-only. -->
+<network-security-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="false">www.vpngate.net</domain>
+    </domain-config>
+</network-security-config>

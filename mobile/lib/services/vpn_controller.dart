@@ -46,9 +46,13 @@ class VpnController extends ChangeNotifier {
       : _client = client ?? http.Client(),
         _injectedEngine = engine;
 
+  /// Official API first, then a copy refreshed every 30 minutes on GitHub
+  /// (.github/workflows/server-list.yml) for networks that block vpngate.net.
   static const apiUrls = [
     'https://www.vpngate.net/api/iphone/',
+    'https://raw.githubusercontent.com/MuktadiSEO/mrmzone-vpn/server-list/servers.csv',
     'http://www.vpngate.net/api/iphone/',
+    'https://cdn.jsdelivr.net/gh/MuktadiSEO/mrmzone-vpn@server-list/servers.csv',
   ];
   static const _cacheKey = 'servers_csv';
   static const _cacheTimeKey = 'servers_time';
@@ -153,7 +157,7 @@ class VpnController extends ChangeNotifier {
       String? lastError;
       for (final url in apiUrls) {
         try {
-          final res = await _client.get(Uri.parse(url)).timeout(const Duration(seconds: 25));
+          final res = await _client.get(Uri.parse(url)).timeout(const Duration(seconds: 15));
           if (res.statusCode != 200) {
             lastError = 'HTTP ${res.statusCode}';
             continue;
@@ -172,7 +176,7 @@ class VpnController extends ChangeNotifier {
           _setServers(list, now, false);
           return;
         } catch (e) {
-          lastError = e is TimeoutException ? 'timed out' : e.toString();
+          lastError = _shortReason(e);
         }
       }
 
@@ -185,12 +189,24 @@ class VpnController extends ChangeNotifier {
         }
       }
       if (countries.isEmpty) {
-        serverError = 'Could not download the free server list. Check your internet connection and try again.';
+        serverError = 'Could not download the free server list ($lastError). '
+            'Check your internet connection and try again.';
       }
     } finally {
       loadingServers = false;
       _notify();
     }
+  }
+
+  static String _shortReason(Object e) {
+    if (e is TimeoutException) return 'timed out';
+    final text = e.toString().split('\n').first;
+    if (RegExp(r'Failed host lookup|SocketException|Connection (refused|reset|closed)|Network is unreachable', caseSensitive: false)
+        .hasMatch(text)) {
+      return 'server unreachable';
+    }
+    if (RegExp(r'Handshake|CERTIFICATE', caseSensitive: false).hasMatch(text)) return 'secure connection failed';
+    return text.length > 80 ? '${text.substring(0, 80)}…' : text;
   }
 
   void _setServers(List<VpnServer> list, DateTime? time, bool cached) {

@@ -1,0 +1,46 @@
+name: Mirror free server list
+
+# Copies the VPN Gate server list to the `server-list` branch every 30 minutes,
+# so the apps can still load servers where www.vpngate.net is blocked.
+on:
+  schedule:
+    - cron: '7,37 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: server-list
+  cancel-in-progress: false
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download list
+        run: |
+          for i in 1 2 3 4 5; do
+            curl -fsSL --max-time 60 https://www.vpngate.net/api/iphone/ -o /tmp/servers.csv && break
+            sleep 20
+          done
+      - name: Validate (must contain working servers)
+        run: |
+          node -e "
+            const { parseServerList } = require('./desktop/src/vpngate');
+            const n = parseServerList(require('fs').readFileSync('/tmp/servers.csv', 'utf8')).length;
+            console.log('servers:', n);
+            if (n < 5) process.exit(1);
+          "
+      - name: Publish to server-list branch
+        run: |
+          mkdir /tmp/out && cd /tmp/out
+          cp /tmp/servers.csv servers.csv
+          date -u +%Y-%m-%dT%H:%M:%SZ > updated.txt
+          git init -q -b server-list
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add servers.csv updated.txt
+          git commit -q -m "Server list $(cat updated.txt)"
+          git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" server-list

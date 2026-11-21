@@ -1,7 +1,7 @@
 {
   "name": "mrmzone-vpn",
   "productName": "MRMZone VPN",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Free VPN for Windows, macOS and Linux with servers in many countries (VPN Gate).",
   "homepage": "https://github.com/MuktadiSEO/mrmzone-vpn",
   "main": "src/main.js",

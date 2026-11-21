@@ -151,6 +151,31 @@ void main() {
     expect(friendlyError('weird'), 'Connection failed: weird');
   });
 
+  test('uses the GitHub mirror when vpngate.net is blocked', () async {
+    SharedPreferences.setMockInitialValues({});
+    final hosts = <String>[];
+    final client = MockClient((req) async {
+      hosts.add(req.url.host);
+      if (req.url.host == 'www.vpngate.net') throw http.ClientException('Connection reset by peer');
+      if (req.url.host == 'raw.githubusercontent.com') return http.Response(csv, 200);
+      return http.Response('{}', 200);
+    });
+    final m = VpnController(engine: FakeEngine(), client: client);
+    await m.init();
+    expect(m.countries.map((x) => x.code), ['JP', 'KR']);
+    expect(m.serverError, isNull);
+    expect(hosts, containsAllInOrder(['www.vpngate.net', 'raw.githubusercontent.com']));
+  });
+
+  test('clear message when every source is blocked', () async {
+    SharedPreferences.setMockInitialValues({});
+    final client = MockClient((req) async => throw http.ClientException('SocketException: Connection reset'));
+    final m = VpnController(engine: FakeEngine(), client: client);
+    await m.init();
+    expect(m.countries, isEmpty);
+    expect(m.serverError, contains('server unreachable'));
+  });
+
   test('favorites persist', () async {
     c.toggleFavorite('KR');
     final prefs = await SharedPreferences.getInstance();

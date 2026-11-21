@@ -100,8 +100,8 @@ jobs:
             | ডিভাইস | ফাইল |
             |---|---|
             | Android | `MRMZone-VPN-android.apk` |
-            | Windows | `MRMZone-VPN-1.0.0-Windows-Setup.exe` (installer) / `MRMZone-VPN-1.0.0-Windows-Portable.exe` |
-            | macOS | `MRMZone-VPN-1.0.0-macOS-arm64.dmg` (Apple Silicon) / `MRMZone-VPN-1.0.0-macOS-x64.dmg` (Intel) |
+            | Windows | `…-Windows-Setup.exe` (installer) / `…-Windows-Portable.exe` |
+            | macOS | `…-macOS-arm64.dmg` (Apple Silicon) / `…-macOS-x64.dmg` (Intel) |
             | Linux | `.deb` / `.AppImage` |
 
             কম্পিউটারে আগে ফ্রি OpenVPN ইনস্টল করুন: https://openvpn.net/community-downloads/ (Windows), `brew install openvpn` (Mac)।

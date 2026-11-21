@@ -54,7 +54,7 @@ function readCache() {
   return null;
 }
 
-async function fetchText(url, timeoutMs = 20000) {
+async function fetchText(url, timeoutMs = 15000) {
   const res = await net.fetch(url, { signal: AbortSignal.timeout(timeoutMs), cache: 'no-store' });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   return res.text();
